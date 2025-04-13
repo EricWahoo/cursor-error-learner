@@ -2,13 +2,17 @@
 
 ## Supported Versions
 
+We release patches for security vulnerabilities for the following versions:
+
 | Version | Supported          |
 | ------- | ------------------ |
 | 1.0.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability within Error Learner, please send an email to . All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within Error Learner, please report it through GitHub's Security Advisory feature. Go to the repository's "Security" tab and click on "Report a vulnerability". All security vulnerabilities will be promptly addressed.
+
+For more information about privately reporting a security vulnerability, see [GitHub's documentation](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing/privately-reporting-a-security-vulnerability).
 
 ## Security Measures
 
