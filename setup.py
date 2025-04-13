@@ -24,9 +24,15 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Software Development :: Debugging",
+        "Topic :: Software Development :: Quality Assurance",
     ],
     python_requires=">=3.9",
-    install_requires=[],
+    install_requires=[
+        "ast",
+        "typing-extensions>=4.0.0",
+        "pathlib",
+    ],
     extras_require={
         "dev": [
             "pytest>=7.0.0",
@@ -37,6 +43,9 @@ setup(
         ],
     },
     entry_points={
+        "console_scripts": [
+            "error-learner=error_learner.cli:main",
+        ],
         "cursor.extensions": [
             "error-learner = error_learner.extension:tracker",
         ],

@@ -26,49 +26,53 @@ class CursorAnalyzer:
         Returns:
             List of potential issues with suggestions
         """
+        self.logger.info("Analyzing current file: %s", file_path)
         return analyzer.analyze_file(file_path)
     
     def analyze_on_save(self, file_path: str) -> None:
         """
-        Analyze file when it's saved in Cursor.
+        Analyze file when it is saved.
         
         Args:
             file_path: Path to the saved file
         """
-        issues = self.analyze_current_file(file_path)
-        if issues:
-            self._report_issues(file_path, issues)
+        self.logger.info("Analyzing file on save: %s", file_path)
+        issues = analyzer.analyze_file(file_path)
+        self._report_issues(file_path, issues)
     
     def analyze_on_open(self, file_path: str) -> None:
         """
-        Analyze file when it's opened in Cursor.
+        Analyze file when it is opened.
         
         Args:
             file_path: Path to the opened file
         """
-        issues = self.analyze_current_file(file_path)
-        if issues:
-            self._report_issues(file_path, issues)
+        self.logger.info("Analyzing file on open: %s", file_path)
+        issues = analyzer.analyze_file(file_path)
+        self._report_issues(file_path, issues)
     
     def analyze_workspace(self, workspace_path: str) -> None:
         """
-        Analyze entire workspace in Cursor.
+        Analyze all Python files in the workspace.
         
         Args:
-            workspace_path: Path to the workspace
+            workspace_path: Path to the workspace directory
         """
+        self.logger.info("Analyzing workspace: %s", workspace_path)
         issues = analyzer.analyze_workspace(workspace_path)
         for file_path, file_issues in issues.items():
             self._report_issues(file_path, file_issues)
     
     def _report_issues(self, file_path: str, issues: List[Dict]) -> None:
-        """Report issues to Cursor's diagnostic panel."""
+        """Report issues found in a file."""
         for issue in issues:
             self.logger.warning(
-                f"Potential issue in {file_path} at line {issue['line']}\n"
-                f"Type: {issue['type']}\n"
-                f"Message: {issue['message']}\n"
-                f"Suggestion: {issue['suggestion']}\n"
+                "Potential issue in %s at line %d\nType: %s\nMessage: %s\nSuggestion: %s\n",
+                file_path,
+                issue["line"],
+                issue["type"],
+                issue["message"],
+                issue["suggestion"]
             )
 
 # Create global cursor analyzer instance

@@ -1,30 +1,27 @@
 """
-Cursor Error Learner Extension - Automatically tracks and learns from errors.
+Extension for automatic error tracking in Cursor IDE.
 """
 
 import sys
 import logging
 import traceback
 from datetime import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Type
 from pathlib import Path
 
-class ErrorTracker:
-    """Automatically tracks errors and suggests fixes."""
+from .core import ErrorTracker, ErrorInfo
+
+class ExtensionTracker(ErrorTracker):
+    """Extended error tracker with Cursor-specific functionality."""
     
-    _instance = None
-    
-    def __new__(cls):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-            cls._instance.error_history = {}
-            cls._instance.setup_logging()
-            cls._instance.setup_exception_hook()
-        return cls._instance
+    def __init__(self):
+        super().__init__()
+        self.logger = logging.getLogger("error_learner.extension")
+        self.setup_logging()
+        self.setup_exception_hook()
     
     def setup_logging(self):
         """Set up logging configuration."""
-        self.logger = logging.getLogger("error_learner")
         if not self.logger.handlers:
             handler = logging.StreamHandler()
             formatter = logging.Formatter(
@@ -99,9 +96,40 @@ class ErrorTracker:
             'ValueError': "Validate input values before processing",
         }
         return suggestions.get(error_type.__name__, "Review the error context and add appropriate validation")
+    
+    def track_error(self, error: Exception, function_name: str, line_number: int) -> None:
+        """Track an error with additional context."""
+        error_info = ErrorInfo(
+            timestamp=datetime.now(),
+            error_type=type(error),
+            error_message=str(error),
+            function_name=function_name,
+            line_number=line_number
+        )
+        self._analyze_error(error_info)
+    
+    def get_suggestions(self, function_name: str) -> List[str]:
+        """Get suggestions for a specific function."""
+        suggestions = []
+        if function_name in self.error_history:
+            for error_info in self.error_history[function_name]:
+                if error_info.fix_suggestion:
+                    suggestions.append(error_info.fix_suggestion)
+        return suggestions
+    
+    def get_error_stats(self) -> Dict[str, int]:
+        """Get statistics about tracked errors."""
+        stats = {}
+        for function_errors in self.error_history.values():
+            for error_info in function_errors:
+                error_type = error_info.error_type.__name__
+                stats[error_type] = stats.get(error_type, 0) + 1
+        return stats
 
-# Create global tracker instance
-tracker = ErrorTracker()
+# Create global instance
+tracker = ExtensionTracker()
+
+__all__ = ["ExtensionTracker", "tracker"]
 
 def get_error_stats() -> Dict[str, List[dict]]:
     """Get all tracked errors."""
