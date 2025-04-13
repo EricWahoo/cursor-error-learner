@@ -19,6 +19,7 @@ class ExtensionTracker(ErrorTracker):
         self.logger = logging.getLogger("error_learner.extension")
         self.setup_logging()
         self.setup_exception_hook()
+        self._error_history: Dict[str, List[Dict[str, Any]]] = {}
     
     def setup_logging(self):
         """Set up logging configuration."""
@@ -44,47 +45,60 @@ class ExtensionTracker(ErrorTracker):
                     tb = tb.tb_next
                 
                 func_name = tb.tb_frame.f_code.co_name
-                file_path = tb.tb_frame.f_code.co_filename
+                file_path = Path(tb.tb_frame.f_code.co_filename).resolve()
                 self._track_error(
                     exc_type, 
                     str(exc_value), 
                     func_name, 
                     tb.tb_lineno,
-                    file_path
+                    str(file_path)
                 )
             self.original_hook(exc_type, exc_value, exc_traceback)
         
         sys.excepthook = exception_hook
     
     def _track_error(self, 
-                    error_type: type, 
+                    error_type: Type[Exception], 
                     error_msg: str, 
                     func_name: str, 
                     line_no: int,
                     file_path: str) -> None:
         """Track an error and provide suggestions if needed."""
         error_key = f"{file_path}:{func_name}"
-        if error_key not in self.error_history:
-            self.error_history[error_key] = []
+        if error_key not in self._error_history:
+            self._error_history[error_key] = []
         
-        self.error_history[error_key].append({
-            'timestamp': datetime.now(),
-            'type': error_type.__name__,
+        error_entry = {
+            'timestamp': datetime.now().isoformat(),
+            'error_type': error_type.__name__,
             'message': str(error_msg),
             'line': line_no,
-            'file': file_path
-        })
+            'file': file_path,
+            'count': 1
+        }
+        
+        # Check for similar errors and update count
+        for existing in self._error_history[error_key]:
+            if (existing['error_type'] == error_entry['error_type'] and 
+                existing['line'] == error_entry['line']):
+                existing['count'] += 1
+                existing['timestamp'] = error_entry['timestamp']
+                break
+        else:
+            self._error_history[error_key].append(error_entry)
         
         # After 3 occurrences, suggest a fix
-        if len(self.error_history[error_key]) >= 3:
+        total_count = sum(e['count'] for e in self._error_history[error_key] 
+                         if e['error_type'] == error_type.__name__)
+        if total_count >= 3:
             suggestion = self._generate_fix_suggestion(error_type)
             if suggestion:
                 self.logger.info(
-                    f"Error in {func_name} at {file_path}:{line_no}\n"
+                    f"Recurring error in {func_name} at {file_path}:{line_no}\n"
                     f"Fix suggestion: {suggestion}"
                 )
     
-    def _generate_fix_suggestion(self, error_type: type) -> str:
+    def _generate_fix_suggestion(self, error_type: Type[Exception]) -> str:
         """Generate fix suggestions based on error type."""
         suggestions = {
             'KeyError': "Ensure the key exists before accessing it: 'if key in dict_name:'",
@@ -94,37 +108,16 @@ class ExtensionTracker(ErrorTracker):
             'AttributeError': "Check if the object has the attribute before accessing",
             'FileNotFoundError': "Verify file exists before opening: 'if path.exists():'",
             'ValueError': "Validate input values before processing",
+            'ImportError': "Ensure required packages are installed and imported correctly",
+            'NameError': "Check variable names and ensure they are defined before use",
+            'SyntaxError': "Review code syntax and fix any formatting issues",
         }
         return suggestions.get(error_type.__name__, "Review the error context and add appropriate validation")
     
-    def track_error(self, error: Exception, function_name: str, line_number: int) -> None:
-        """Track an error with additional context."""
-        error_info = ErrorInfo(
-            timestamp=datetime.now(),
-            error_type=type(error),
-            error_message=str(error),
-            function_name=function_name,
-            line_number=line_number
-        )
-        self._analyze_error(error_info)
-    
-    def get_suggestions(self, function_name: str) -> List[str]:
-        """Get suggestions for a specific function."""
-        suggestions = []
-        if function_name in self.error_history:
-            for error_info in self.error_history[function_name]:
-                if error_info.fix_suggestion:
-                    suggestions.append(error_info.fix_suggestion)
-        return suggestions
-    
-    def get_error_stats(self) -> Dict[str, int]:
-        """Get statistics about tracked errors."""
-        stats = {}
-        for function_errors in self.error_history.values():
-            for error_info in function_errors:
-                error_type = error_info.error_type.__name__
-                stats[error_type] = stats.get(error_type, 0) + 1
-        return stats
+    @property
+    def error_history(self) -> Dict[str, List[Dict[str, Any]]]:
+        """Get the error history."""
+        return self._error_history.copy()
 
 # Create global instance
 tracker = ExtensionTracker()

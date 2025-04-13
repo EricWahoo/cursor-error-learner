@@ -1,43 +1,38 @@
 # Error Learner
 
-A Python tool for tracking and learning from errors in your code. This package provides functionality to automatically track errors, analyze patterns, and suggest fixes based on error history.
+A Python tool for tracking and learning from errors in your code. This package provides functionality to automatically track errors, analyze patterns, and suggest fixes based on error history. It integrates seamlessly with the Cursor IDE for enhanced development experience.
 
 ## Features
 
-- 🎯 Automatic error tracking with a simple decorator
-- 📊 Error statistics and analysis
-- 💡 Smart fix suggestions after multiple occurrences
-- 🔍 Proactive issue detection in code analysis
-- 🌍 Workspace-wide code analysis
-- 📝 Detailed error information including timestamps and context
-- 🚀 Command-line interface for error analysis
+- 🎯 Automatic error tracking with zero configuration in Cursor IDE
+- 📊 Real-time error statistics and analysis
+- 💡 Smart fix suggestions after recurring errors
+- 🔍 Proactive issue detection through static code analysis
+- 🌍 Workspace-wide code pattern analysis
+- 📝 Detailed error tracking with timestamps and context
+- 🚀 Rich command-line interface for error analysis
+- 🔒 Secure local-only error tracking
+- 🎨 Beautiful console output with rich formatting
 
 ## Requirements
 
 - Python 3.9 or higher
 - pip (Python package installer)
+- Cursor IDE (for automatic integration)
 
 ## Installation
 
 ```bash
-# Clone the repository
-git clone https://github.com/EricWahoo/cursor-error-learner.git
-cd cursor-error-learner
+# Install directly from GitHub
+pip install git+https://github.com/EricWahoo/cursor-error-learner.git
 
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install the package in development mode
-pip install -e .
-
-# For development, install additional dependencies
-pip install -e ".[dev]"
+# For development features
+pip install git+https://github.com/EricWahoo/cursor-error-learner.git#egg=cursor-error-learner[dev]
 ```
 
-## Usage
+## Quick Start
 
-### Basic Usage
+Error Learner works automatically in Cursor IDE! Just install the package and start coding. For manual integration:
 
 ```python
 from error_learner import track
@@ -57,13 +52,13 @@ from error_learner import track
 def divide_numbers(a, b):
     return a / b
 
-# First run - error is tracked
+# Errors are automatically tracked
 try:
     divide_numbers(1, 0)
 except ZeroDivisionError:
     pass
 
-# After multiple occurrences, fix suggestions are provided
+# After 3 occurrences, you'll get fix suggestions
 ```
 
 ### Code Analysis Example
@@ -71,14 +66,14 @@ except ZeroDivisionError:
 ```python
 from error_learner import analyzer
 
-# Analyze a single file
+# Analyze current file
 issues = analyzer.analyze_file('your_script.py')
 for issue in issues:
     print(f"Line {issue['line']}: {issue['message']}")
     print(f"Suggestion: {issue['suggestion']}")
 
-# Analyze entire workspace
-workspace_issues = analyzer.analyze_workspace('your_project_dir')
+# Analyze workspace
+workspace_issues = analyzer.analyze_workspace('.')
 for file_path, file_issues in workspace_issues.items():
     print(f"\nIssues in {file_path}:")
     for issue in file_issues:
@@ -88,32 +83,45 @@ for file_path, file_issues in workspace_issues.items():
 ### CLI Usage
 
 ```bash
-# Get error statistics
+# View error statistics
 error-learner stats
 
-# Get stats for a specific function
-error-learner stats --function your_function_name
+# Analyze current directory
+error-learner analyze .
 
-# Analyze a Python file
-error-learner analyze your_script.py
+# Analyze specific file
+error-learner analyze path/to/file.py
 
-# Analyze entire workspace
-error-learner analyze --workspace your_project_dir
-
-# Set log level
-error-learner --log-level DEBUG stats
+# Get detailed help
+error-learner --help
 ```
+
+## Security
+
+Error Learner takes security seriously:
+- All error data is stored locally
+- No external API calls or data transmission
+- Sensitive information is automatically redacted from error logs
+- See SECURITY.md for our full security policy
 
 ## Development
 
 ### Setup Development Environment
 
 ```bash
-# Install development dependencies
+# Clone the repository
+git clone https://github.com/EricWahoo/cursor-error-learner.git
+cd cursor-error-learner
+
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install in development mode with all extras
 pip install -e ".[dev]"
 
-# Run tests
-pytest
+# Run tests with coverage
+pytest --cov=src/error_learner
 ```
 
 ### Project Structure
@@ -122,32 +130,33 @@ pytest
 cursor-error-learner/
 ├── src/
 │   └── error_learner/
-│       ├── __init__.py
-│       ├── analyzer.py      # Pattern analysis and workspace scanning
+│       ├── __init__.py      # Package initialization and exports
+│       ├── analyzer.py      # Pattern analysis and code scanning
 │       ├── core.py         # Core error tracking functionality
 │       ├── extension.py    # Cursor IDE integration
-│       └── utils.py        # Utility functions
-├── tests/
-│   ├── __init__.py
-│   ├── test_analyzer.py
-│   ├── test_core.py
-│   ├── test_demo.py
-│   └── test_extension.py
-├── .gitignore
-├── CHANGELOG.md
-├── README.md
-├── setup.py
-└── pytest.ini
+│       ├── utils.py        # Utility functions
+│       └── cli.py         # Command-line interface
+├── tests/                 # Comprehensive test suite
+├── examples/             # Usage examples
+├── docs/                # Documentation
+└── [configuration files]
 ```
 
 ## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (`pytest`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Built with ❤️ for the Cursor IDE community
+- Special thanks to all contributors

@@ -25,8 +25,12 @@ class ErrorTracker:
     """Tracks and analyzes errors in function execution."""
     
     def __init__(self):
-        self.error_history: Dict[str, list[ErrorInfo]] = {}
+        self._error_history: Dict[str, list[ErrorInfo]] = {}
         self.logger = logging.getLogger(__name__)
+    
+    @property
+    def error_history(self) -> Dict[str, list[ErrorInfo]]:
+        return self._error_history
     
     def track(self, func: Callable) -> Callable:
         """Decorator to track errors in function execution."""
@@ -43,10 +47,10 @@ class ErrorTracker:
                     line_number=e.__traceback__.tb_lineno
                 )
                 
-                if func.__name__ not in self.error_history:
-                    self.error_history[func.__name__] = []
+                if func.__name__ not in self._error_history:
+                    self._error_history[func.__name__] = []
                 
-                self.error_history[func.__name__].append(error_info)
+                self._error_history[func.__name__].append(error_info)
                 self._analyze_error(error_info)
                 
                 raise
@@ -54,7 +58,7 @@ class ErrorTracker:
     
     def _analyze_error(self, error_info: ErrorInfo) -> None:
         """Analyze the error and suggest fixes if possible."""
-        func_errors = self.error_history[error_info.function_name]
+        func_errors = self._error_history[error_info.function_name]
         if len(func_errors) >= 3:
             # After 3 occurrences, try to suggest a fix
             error_info.fix_suggestion = self._generate_fix_suggestion(error_info)

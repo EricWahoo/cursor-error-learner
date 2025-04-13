@@ -26,12 +26,14 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Software Development :: Debugging",
         "Topic :: Software Development :: Quality Assurance",
+        "Intended Audience :: Education",
+        "Natural Language :: English",
     ],
     python_requires=">=3.9",
     install_requires=[
-        "ast",
         "typing-extensions>=4.0.0",
-        "pathlib",
+        "click>=8.0.0",  # For CLI interface
+        "rich>=10.0.0",  # For pretty console output
     ],
     extras_require={
         "dev": [
