@@ -1,20 +1,13 @@
 """
-Error Learner - A tool for tracking and learning from Python errors.
-
-This package provides functionality to track, analyze, and learn from errors
-in Python code execution.
+Error Learner - Automatic error tracking and learning for Python code.
 """
 
-__version__ = "1.0.0"
+from .core import track, ErrorTracker
+from .analyzer import PatternAnalyzer
+from .extension import ErrorTracker as ExtensionTracker
 
-from .core import track, ErrorTracker, ErrorInfo
-from .utils import setup_logging, get_error_stats, get_error_count
+# Create global instances
+tracker = ExtensionTracker()
+analyzer = PatternAnalyzer()
 
-__all__ = [
-    'track',
-    'ErrorTracker',
-    'ErrorInfo',
-    'setup_logging',
-    'get_error_stats',
-    'get_error_count'
-] 
+__all__ = ['track', 'tracker', 'analyzer', 'ErrorTracker', 'PatternAnalyzer'] 

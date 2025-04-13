@@ -6,12 +6,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="cursor-error-learner",
     version="1.0.0",
-    author="Your Name",
-    author_email="your.email@example.com",
-    description="A tool for tracking and learning from Python errors",
+    author="Eric Wahoo",
+    author_email="",
+    description="Automatic error tracking and learning for Python code",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/cursor-error-learner",
+    url="https://github.com/EricWahoo/cursor-error-learner",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     classifiers=[
@@ -37,8 +37,8 @@ setup(
         ],
     },
     entry_points={
-        "console_scripts": [
-            "error-learner=cli.cli:main",
+        "cursor.extensions": [
+            "error-learner = error_learner.extension:tracker",
         ],
     },
 )

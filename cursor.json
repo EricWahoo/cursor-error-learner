@@ -1,0 +1,34 @@
+{
+    "name": "Error Learner",
+    "version": "1.0.0",
+    "description": "Automatically tracks and learns from Python errors",
+    "author": "Your Name",
+    "main": "src/error_learner/extension.py",
+    "activationEvents": [
+        "onStartup"
+    ],
+    "contributes": {
+        "commands": [
+            {
+                "command": "error-learner.stats",
+                "title": "Show Error Statistics"
+            }
+        ],
+        "configuration": {
+            "title": "Error Learner",
+            "properties": {
+                "errorLearner.suggestionThreshold": {
+                    "type": "number",
+                    "default": 3,
+                    "description": "Number of occurrences before suggesting a fix"
+                },
+                "errorLearner.logLevel": {
+                    "type": "string",
+                    "enum": ["debug", "info", "warning", "error"],
+                    "default": "info",
+                    "description": "Logging level for error suggestions"
+                }
+            }
+        }
+    }
+} 

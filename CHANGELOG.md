@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-04-14
+
+### Added
+- Proactive issue detection in code analysis
+- Support for analyzing entire workspaces
+- Debug logging for better troubleshooting
+
+### Changed
+- Improved pattern analysis to detect potential issues before errors occur
+- Enhanced workspace analysis to include both errors and potential issues
+- Optimized error tracking with better file path handling
+
+### Fixed
+- Fixed workspace analysis not detecting files with potential issues
+- Improved error key format handling in file error tracking
+- Removed unnecessary error history checks for certain error types
+
 ## [1.0.0] - 2024-04-13
 
 ### Added
